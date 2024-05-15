@@ -27,7 +27,11 @@ struct dac_reg_t
   /// Offset: 0x0008 Counter Value register R/W
   volatile uint32_t count_value;
 };
+static constexpr std::intptr_t lpc_apb0_base = 0x40000000UL;
+static constexpr std::intptr_t lpc_dac_addr = lpc_apb0_base + 0x8C000; //this is the address of the converter register
+
 namespace dac_converter_register {
+  /// 
   static constexpr auto value = hal::bit_mask::from<6,15>();
 
   static constexpr auto bias = hal::bit_mask::from<16>();

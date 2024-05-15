@@ -30,17 +30,20 @@ namespace hal::lpc40 {
 class dac : public hal::dac
 {
 public:
-  static constexpr std::intptr_t lpc_apb0_base = 0x40000000UL;
-  static constexpr std::intptr_t lpc_dac_addr = lpc_apb0_base + 0x8C000;
 
   //TODO figure out constructors
-  //it shoudl just be defautl constructor cuz dac doens't seem to have channels
-  dac();
+  //not sure if this is a default constructor. Only one pin(i think) can do D/A in this chip
+  // P[0]26 which i assume is port 0 pin 26
+
+  dac(std::uint8_t p_port, std::uint8_t p_pin);
   
   virtual ~dac() = default;
 
 private: 
-  void driver_write() override;
-
+  void driver_write(float p_percentage) override;
+  std::uint8_t m_port{};
+  std::uint8_t m_pin{};
+  pin dac_pin; 
 };
 }
+
