@@ -29,7 +29,7 @@ void application()
     hal::lpc40::get_frequency(hal::lpc40::peripheral::cpu));
   std::array<hal::byte, 32> buffer{};
   hal::lpc40::uart uart0(0, buffer);
-  hal::print(uart0, "ADC Application Starting...\n");
+  hal::print(uart0, "DAC Application Starting...\n");
 
   hal::lpc40::dac dac;
   while (true) {
