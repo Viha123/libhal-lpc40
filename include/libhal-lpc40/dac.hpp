@@ -35,14 +35,13 @@ public:
   //not sure if this is a default constructor. Only one pin(i think) can do D/A in this chip
   // P[0]26 which i assume is port 0 pin 26
 
-  dac(std::uint8_t p_port, std::uint8_t p_pin);
+  dac();
   
   virtual ~dac() = default;
 
 private: 
   void driver_write(float p_percentage) override;
-  std::uint8_t m_port{};
-  std::uint8_t m_pin{};
+
   pin dac_pin; 
 };
 }

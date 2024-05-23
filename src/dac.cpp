@@ -18,10 +18,8 @@
 namespace hal::lpc40 {
 
 dac::dac(std::uint8_t p_port, std::uint8_t p_pin)
-  : m_port(p_port)
-  , m_pin(p_pin)
 {
-  pin dac_pin(m_port, m_pin);
+  pin dac_pin(0, 26);
   dac_pin.analog(true);
   dac_pin.dac(true);
 }
@@ -38,12 +36,11 @@ dac_reg_t* to_reg_map(std::intptr_t p_pointer)
 
 void dac::driver_write(float p_percentage)
 {
-  auto bits_to_modify = p_percentage >> 22;  // getting the 10 most significant bits to set the value
+  int bits_to_modify = static_cast<int>(p_percentage * 1024);  // getting the 10 most significant bits to set the value
   // then i need to bit_modify this value on the dac_pin's converter register's
   // value bits.
   auto* dac_register = to_reg_map(lpc_dac_addr); //start to address of dac 
-  hal::bit_modify(dac_register->converter).set<dac_converter_register::value>();
-  // now voltage on this pin SHOULD BE value * Vref/1024 which makes sense i
-  // hope
+  hal::bit_modify(dac_register->converter).insert<dac_converter_register::value>(bits_to_modify);
+
 }
 }  // namespace hal::lpc40
