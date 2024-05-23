@@ -28,6 +28,7 @@ libhal_build_demos(
   pwm
   spi
   blank
+  dac
 
   PACKAGES
   libhal-lpc40

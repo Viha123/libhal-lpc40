@@ -32,6 +32,7 @@ libhal_test_and_make_library(
   src/interrupt_pin.cpp
   src/adc.cpp
   src/spi.cpp
+  src/dac.cpp
 
   TEST_SOURCES
   tests/adc.test.cpp

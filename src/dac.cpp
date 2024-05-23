@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "dac_reg.hpp"
+// #include "../include/libhal-lpc40/dac.hpp"
 #include <libhal-lpc40/dac.hpp>
 #include <libhal-lpc40/pin.hpp>
+#include <libhal-util/bit.hpp>
+#include <libhal-util/bit_limits.hpp>
+#include "dac_reg.hpp"
+
 namespace hal::lpc40 {
 
-dac::dac(std::uint8_t p_port, std::uint8_t p_pin)
+dac::dac()
 {
   pin dac_pin(0, 26);
   dac_pin.analog(true);
@@ -36,7 +40,7 @@ dac_reg_t* to_reg_map(std::intptr_t p_pointer)
 
 void dac::driver_write(float p_percentage)
 {
-  int bits_to_modify = static_cast<int>(p_percentage * 1024);  // getting the 10 most significant bits to set the value
+  const auto bits_to_modify = static_cast<std::uint32_t>(p_percentage * 1024);  // getting the 10 most significant bits to set the value
   // then i need to bit_modify this value on the dac_pin's converter register's
   // value bits.
   auto* dac_register = to_reg_map(lpc_dac_addr); //start to address of dac 

@@ -20,8 +20,6 @@
 #include <libhal/initializers.hpp>
 #include <libhal/units.hpp>
 
-#include "pin.hpp"
-
 namespace hal::lpc40 {
   /**
  * @brief Digital to Analog converter
@@ -42,7 +40,6 @@ public:
 private: 
   void driver_write(float p_percentage) override;
 
-  pin dac_pin; 
 };
 }
 
