@@ -19,6 +19,7 @@
 #include <libhal-armcortex/interrupt.hpp>
 #include <libhal-lpc40/clock.hpp>
 #include <libhal-lpc40/constants.hpp>
+#include <libhal-lpc40/interrupt.hpp>
 #include <libhal-lpc40/power.hpp>
 #include <libhal-util/bit.hpp>
 #include <libhal-util/i2c.hpp>
@@ -48,7 +49,7 @@ void disable(i2c::bus_info& p_info)
   reg->control_clear = i2c_control::interface_enable;
 
   // Enable interrupt service routine.
-  cortex_m::interrupt(static_cast<int>(p_info.irq_number)).disable();
+  cortex_m::disable_interrupt(p_info.irq_number);
 }
 
 void i2c::interrupt()
@@ -177,7 +178,10 @@ void i2c::interrupt()
   }
 }
 
-i2c::i2c(std::uint8_t p_bus_number, const i2c::settings& p_settings)
+i2c::i2c(std::uint8_t p_bus_number,
+         const i2c::settings& p_settings,
+         hal::io_waiter& p_waiter)
+  : m_waiter(&p_waiter)
 {
   // UM10562: Chapter 7: LPC408x/407x I/O configuration page 13
   switch (p_bus_number) {
@@ -220,7 +224,7 @@ i2c::i2c(std::uint8_t p_bus_number, const i2c::settings& p_settings)
     }
   }
 
-  cortex_m::interrupt::initialize<value(irq::max)>();
+  cortex_m::initialize_interrupts<value(irq::max)>();
   i2c::driver_configure(p_settings);
 }
 
@@ -229,10 +233,13 @@ i2c::~i2c()
   disable(m_bus);
 }
 
-i2c::i2c(const bus_info& p_bus, const i2c::settings& p_settings)
+i2c::i2c(const bus_info& p_bus,
+         const i2c::settings& p_settings,
+         hal::io_waiter& p_waiter)
   : m_bus(p_bus)
+  , m_waiter(&p_waiter)
 {
-  cortex_m::interrupt::initialize<value(irq::max)>();
+  initialize_interrupts();
   i2c::driver_configure(p_settings);
 }
 
@@ -301,7 +308,7 @@ void i2c::setup_interrupt()
   }
 
   // Enable interrupt service routine.
-  cortex_m::interrupt(hal::value(m_bus.irq_number)).enable(handler);
+  cortex_m::enable_interrupt(m_bus.irq_number, handler);
 }
 
 void i2c::driver_transaction(hal::byte p_address,
@@ -326,6 +333,7 @@ void i2c::driver_transaction(hal::byte p_address,
   while (m_busy) {
     try {
       p_timeout();
+      m_waiter->wait();
     } catch (...) {
       // The expected exception is hal::timed_out, but it could be something
       // else. Let rethrow the exception so the caller handle it.

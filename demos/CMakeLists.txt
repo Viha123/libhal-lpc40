@@ -28,11 +28,17 @@ libhal_build_demos(
   pwm
   spi
   blank
+<<<<<<< HEAD
   dac
+=======
+  stream_dac
+>>>>>>> fdbf0792169313ecb1606f208882be050427cc86
 
   PACKAGES
   libhal-lpc40
+  minimp3
 
   LINK_LIBRARIES
   libhal::lpc40
+  minimp3::minimp3
 )

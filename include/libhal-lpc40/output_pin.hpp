@@ -23,7 +23,7 @@ namespace hal::lpc40 {
  * @brief Output pin implementation for the lpc40xx
  *
  */
-class output_pin : public hal::output_pin
+class output_pin final : public hal::output_pin
 {
 public:
   /**
@@ -35,16 +35,16 @@ public:
    */
   output_pin(std::uint8_t p_port,
              std::uint8_t p_pin,
-             const output_pin::settings& p_settings = {});
+             output_pin::settings const& p_settings = {});
 
-  output_pin(output_pin& p_other) = delete;
-  output_pin& operator=(output_pin& p_other) = delete;
+  output_pin(output_pin const& p_other) = delete;
+  output_pin& operator=(output_pin const& p_other) = delete;
   output_pin(output_pin&& p_other) noexcept = delete;
   output_pin& operator=(output_pin&& p_other) noexcept = delete;
-  ~output_pin() = default;
+  virtual ~output_pin() = default;
 
 private:
-  void driver_configure(const settings& p_settings) override;
+  void driver_configure(settings const& p_settings) override;
   void driver_level(bool p_high) override;
   bool driver_level() override;
 

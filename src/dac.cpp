@@ -27,24 +27,14 @@ dac::dac()
   dac_pin.analog(true);
   dac_pin.dac(true);
 }
-/**
- * @brief Convert channel info void pointer to an dac register map type
- *
- * @param p_pointer - pointer to the start
- * @return dac_reg_t*
- */
-dac_reg_t* to_reg_map(std::intptr_t p_pointer)
-{
-  return reinterpret_cast<dac_reg_t*>(p_pointer);  // NOLINT
-}
+
 
 void dac::driver_write(float p_percentage)
 {
   const auto bits_to_modify = static_cast<std::uint32_t>(p_percentage * 1024);  // getting the 10 most significant bits to set the value
   // then i need to bit_modify this value on the dac_pin's converter register's
   // value bits.
-  auto* dac_register = to_reg_map(lpc_dac_addr); //start to address of dac 
-  hal::bit_modify(dac_register->converter).insert<dac_converter_register::value>(bits_to_modify);
+  hal::bit_modify(dac_reg->conversion_register).insert<dac_converter_register::value>(bits_to_modify);
 
 }
 }  // namespace hal::lpc40

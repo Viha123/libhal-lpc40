@@ -1,39 +1,28 @@
-// Copyright 2024 Khalil Estell
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 #pragma once
 
-#include <cstdint>
-
-#include <libhal-util/bit.hpp>
+#include <array>
 
 namespace hal::lpc40 {
-struct dac_reg_t
+struct dac_registers
 {
-  /// Offset: 0x0000 D/A Converter Register R/W
-  volatile uint32_t converter;
-  /// Offset: 0x0004 DAC control register R/W
-  volatile uint32_t control;
-  /// Offset: 0x0008 Counter Value register R/W
-  volatile uint32_t count_value;
+  union
+  {
+    volatile std::uint32_t whole;
+    std::array<volatile std::uint8_t, 4> parts;
+  } conversion_register;
+  volatile std::uint32_t control;
+  volatile std::uint32_t count_value;
 };
-static constexpr std::intptr_t lpc_apb0_base = 0x40000000UL;
-static constexpr std::intptr_t lpc_dac_addr = lpc_apb0_base + 0x8C000; //this is the address of the converter register
 
+constexpr std::uintptr_t dac_address = 0x4008'C000;
+inline auto* dac_reg = reinterpret_cast<dac_registers*>(dac_address);
 namespace dac_converter_register {
   /// 
   static constexpr auto value = hal::bit_mask::from<6,15>();
 
   static constexpr auto bias = hal::bit_mask::from<16>();
 }
-}
+}  // namespace hal::lpc40// Copyright 2024 Khalil Estell
+
+
+

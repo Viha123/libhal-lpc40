@@ -48,7 +48,7 @@ int main()
   using namespace hal::literals;
   // Change the input frequency to match the frequency of the crystal attached
   // to the external OSC pins.
-  hal::lpc40::maximum(10.0_MHz);
+  hal::lpc40::maximum(12.0_MHz);
 
   hal::set_terminate(terminate_handler);
 
@@ -56,4 +56,15 @@ int main()
   application();
 
   return 0;
+}
+
+extern "C"
+{
+  // This gets rid of an issue with libhal-exceptions in Debug mode.
+  void __assert_func(const char*, int, const char*, const char*)
+  {
+    while (true) {
+      continue;
+    }
+  }
 }

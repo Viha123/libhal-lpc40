@@ -34,7 +34,7 @@ namespace hal::lpc40 {
  * channels within the peripheral block.
  *
  */
-class pwm : public hal::pwm
+class pwm final : public hal::pwm
 {
 public:
   /// Channel specific information
@@ -59,11 +59,11 @@ public:
    */
   pwm(std::uint8_t p_peripheral, std::uint8_t p_channel);
 
-  pwm(pwm& p_other) = delete;
-  pwm& operator=(pwm& p_other) = delete;
+  pwm(pwm const& p_other) = delete;
+  pwm& operator=(pwm const& p_other) = delete;
   pwm(pwm&& p_other) noexcept = delete;
   pwm& operator=(pwm&& p_other) noexcept = delete;
-  ~pwm() = default;
+  virtual ~pwm() = default;
 
 private:
   void driver_frequency(hertz p_frequency) override;

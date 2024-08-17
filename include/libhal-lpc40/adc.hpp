@@ -20,7 +20,6 @@
 #include <libhal/initializers.hpp>
 #include <libhal/units.hpp>
 
-#include "constants.hpp"
 #include "pin.hpp"
 
 namespace hal::lpc40 {
@@ -28,17 +27,12 @@ namespace hal::lpc40 {
  * @brief Analog to digital converter
  *
  */
-class adc : public hal::adc
+class adc final : public hal::adc
 {
 public:
-  static constexpr std::intptr_t lpc_apb0_base = 0x40000000UL;
-  static constexpr std::intptr_t lpc_adc_addr = lpc_apb0_base + 0x34000;
-
   /// Channel specific information
   struct channel
   {
-    // Pointer to the peripheral memory map
-    std::intptr_t reg = lpc_adc_addr;
     /// Default and highest sampling rate is 1 MHz. Careful as changing this for
     /// one channel changes this for all channels on the lpc40xx mcu.
     hertz clock_rate = 1'000'000.0f;
@@ -49,25 +43,6 @@ public:
     /// Pin mux function code
     uint8_t pin_function;
   };
-
-  /**
-   * @brief Construct a custom adc object based on the passed in channel
-   * information.
-   *
-   * Care should be taken to ensure that the adc's operating frequency does not
-   * go above 1MHz and that the the channel index is within the bounds of 0
-   * to 7. Exceeding these bounds will result in a call to std::abort.
-   *
-   * Care should also be taken to ensure that two adc's constructed via this
-   * method do not overlap in index.
-   *
-   * The operating frequency is shared across all adc channels, which means that
-   * the last adc to be constructed will set sampling frequency for all
-   * channels.
-   *
-   * @param p_channel - Which adc channel to use
-   */
-  adc(const channel& p_channel);
 
   /**
    * @brief Get a predefined adc channel
@@ -90,8 +65,27 @@ public:
                   "Available ADC channels are from 0 to 7");
   }
 
-  adc(adc& p_other) = delete;
-  adc& operator=(adc& p_other) = delete;
+  /**
+   * @brief Construct a custom adc object based on the passed in channel
+   * information.
+   *
+   * Care should be taken to ensure that the adc's operating frequency does not
+   * go above 1MHz and that the the channel index is within the bounds of 0
+   * to 7. Exceeding these bounds will result in a call to std::abort.
+   *
+   * Care should also be taken to ensure that two adc's constructed via this
+   * method do not overlap in index.
+   *
+   * The operating frequency is shared across all adc channels, which means that
+   * the last adc to be constructed will set sampling frequency for all
+   * channels.
+   *
+   * @param p_channel - Which adc channel to use
+   */
+  adc(channel const& p_channel);
+
+  adc(adc const& p_other) = delete;
+  adc& operator=(adc const& p_other) = delete;
   adc(adc&& p_other) noexcept = delete;
   adc& operator=(adc&& p_other) noexcept = delete;
   virtual ~adc() = default;
@@ -100,6 +94,6 @@ private:
   channel get_predefined_channel_info(std::uint8_t p_channel);
   float driver_read() override;
 
-  volatile uint32_t* m_sample = nullptr;
+  uint32_t volatile* m_sample = nullptr;
 };
 }  // namespace hal::lpc40

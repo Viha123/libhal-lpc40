@@ -23,7 +23,7 @@
 #include "pin.hpp"
 
 namespace hal::lpc40 {
-class spi : public hal::spi
+class spi final : public hal::spi
 {
 public:
   /// Information used to configure the spi bus
@@ -53,7 +53,7 @@ public:
    * @throws hal::operation_not_supported - if the p_bus is not 0, 1, or 2 or if
    * the spi settings could not be achieved.
    */
-  spi(std::uint8_t p_bus, const spi::settings& p_settings = {});
+  spi(std::uint8_t p_bus, spi::settings const& p_settings = {});
   /**
    * @brief Construct a new spi object using bus info directly
    *
@@ -61,15 +61,15 @@ public:
    */
   spi(bus_info p_bus);
 
-  spi(spi& p_other) = delete;
-  spi& operator=(spi& p_other) = delete;
+  spi(spi const& p_other) = delete;
+  spi& operator=(spi const& p_other) = delete;
   spi(spi&& p_other) noexcept = delete;
   spi& operator=(spi&& p_other) noexcept = delete;
-  ~spi();
+  virtual ~spi();
 
 private:
-  void driver_configure(const settings& p_settings) override;
-  void driver_transfer(std::span<const hal::byte> p_data_out,
+  void driver_configure(settings const& p_settings) override;
+  void driver_transfer(std::span<hal::byte const> p_data_out,
                        std::span<hal::byte> p_data_in,
                        hal::byte p_filler) override;
 

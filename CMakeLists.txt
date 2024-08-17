@@ -30,9 +30,15 @@ libhal_test_and_make_library(
   src/i2c.cpp
   src/uart.cpp
   src/interrupt_pin.cpp
+  src/interrupt.cpp
   src/adc.cpp
   src/spi.cpp
+<<<<<<< HEAD
   src/dac.cpp
+=======
+  src/dma.cpp
+  src/stream_dac.cpp
+>>>>>>> fdbf0792169313ecb1606f208882be050427cc86
 
   TEST_SOURCES
   tests/adc.test.cpp
@@ -44,17 +50,20 @@ libhal_test_and_make_library(
   tests/i2c.test.cpp
   tests/pwm.test.cpp
   tests/spi.test.cpp
+  tests/stream_dac.test.cpp
   tests/main.test.cpp
 
   PACKAGES
   libhal
   libhal-util
   libhal-armcortex
+  libhal-soft
   ring-span-lite
 
   LINK_LIBRARIES
   libhal::libhal
   libhal::util
   libhal::armcortex
+  libhal::soft
   nonstd::ring-span-lite
 )
